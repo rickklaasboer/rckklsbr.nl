@@ -1,0 +1,11 @@
+# Block for the central Caddy on zwolle-edge, which runs this app on 127.0.0.1:8095 (APP_PORT).
+# Live copy: caddy repo, hosts/zwolle-edge/vhosts/. Keep both in sync.
+rckklsbr.nl, www.rckklsbr.nl {
+	import logging
+	header Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+	reverse_proxy 127.0.0.1:8095 {
+		header_up Host {host}
+		header_up X-Real-IP {remote}
+	}
+}
