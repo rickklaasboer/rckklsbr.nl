@@ -1,8 +1,10 @@
 # rckklsbr.nl
 
-Small URL shortener. The form on `/` stores a link under a random 8 character code, `/{code}` redirects to the destination with a 301. Only `http` and `https` destinations are accepted.
+Small URL shortener. The form on `/` stores a link under a random 8 character code, `/{code}` counts a click and redirects to the destination with a 302. Only `http` and `https` destinations are accepted. Creating is protected by Cloudflare Turnstile and limited to 10 attempts per hour per IP. `/links` (login required, 2FA optional) lists links with clicks and deletes them.
 
-Stack: Laravel 13, PHP 8.4, Blade with Bootstrap 5 (Vite 8), MySQL 8.4.
+Stack: Laravel 13, PHP 8.4, Inertia with React, TypeScript and Tailwind 4 (Vite 8), MySQL 8.4.
+
+Environment: `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` (the `.env.example` values are Cloudflare test keys), `APP_LOCALE=nl`. Create the admin with `php artisan user:create` (only possible while no user exists).
 
 ## Development
 
@@ -83,4 +85,17 @@ gunzip -c backups/rckklsbr-2026-10-20.sql.gz | docker compose -f compose.prod.ya
 
 ### Migrating the existing database
 
-The live schema is `links(code, destination longtext, created_at, updated_at)`. A dump of that table can be loaded into the new `mysql` container before the first start of `app`; the migrations then skip what already exists only if the `migrations` table was part of the dump. Without it, load only the `links` rows into a freshly migrated database.
+The live schema is `links(code, destination longtext, created_at, updated_at)` in the existing `mysql` container. Load only the rows into the freshly migrated database of this stack; `clicks` starts at 0.
+
+```bash
+# 1. on the host: dump the rows of the old container (database name and credentials as in its own setup)
+docker exec mysql mysqldump --no-create-info --complete-insert --skip-triggers -u<user> -p <database> links > links.sql
+# 2. start the new stack once so the migrations create the tables, then create the admin
+docker compose -f compose.prod.yaml up -d
+docker compose -f compose.prod.yaml exec app php artisan user:create
+# 3. load the rows (16 expected) and check the count
+docker compose -f compose.prod.yaml exec -T mysql sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"' < links.sql
+docker compose -f compose.prod.yaml exec mysql sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" -e "select count(*) from links"'
+```
+
+Switch the Caddy upstream to port 8095 only after the count matches, and keep the old container until then.

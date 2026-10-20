@@ -2,7 +2,7 @@
 
 # CLAUDE.md
 
-URL shortener for rckklsbr.nl. Public form creates a link (8 random chars, `links.code` is the string PK), `/{code}` answers a 301 to the destination. Only http and https destinations. Laravel 13, PHP 8.4, Blade, Bootstrap 5 via Vite 8, MySQL 8.4, pnpm. Setup and deploy: `README.md`.
+URL shortener for rckklsbr.nl. Public form creates a link (8 random chars, `links.code` is the string PK), `/{code}` counts the click and answers a 302 to the destination. Only http and https destinations. Create is protected by Turnstile and 10 attempts per hour per IP. Admin (`/links`, single user via Fortify with 2FA) lists and deletes links. Laravel 13, PHP 8.4, Inertia + React + TypeScript + Tailwind 4 (Vite 8), MySQL 8.4, pnpm. Setup and deploy: `README.md`.
 
 ## Commands
 
@@ -14,6 +14,8 @@ docker compose up -d --build
 docker compose exec app php artisan migrate
 docker compose exec app php artisan test    # Pest on MySQL db rckklsbr_test (created by docker/mysql/init.sql)
 docker compose exec app vendor/bin/pint --test
+docker compose exec app php artisan user:create    # the single admin user
+pnpm typecheck && pnpm test && pnpm i18n:check && pnpm build
 ```
 
 ## Rules
