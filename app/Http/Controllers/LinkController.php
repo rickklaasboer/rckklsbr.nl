@@ -2,42 +2,56 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Link;
 use App\Http\Requests\StoreLinkRequest;
-use App\Http\Requests\UpdateLinkRequest;
+use App\Models\Link;
+use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
+use Inertia\Response;
+use RuntimeException;
 
 class LinkController extends Controller
 {
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('link.create');
-    }
+    private const CODE_ATTEMPTS = 5;
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreLinkRequest $request)
+    public function create(): Response
     {
-        $link = Link::query()->create([
-            'code' => Str::random(8),
-            'destination' => $request->validated('destination'),
+        return Inertia::render('Links/Create', [
+            'turnstileSiteKey' => config()->string('services.turnstile.site_key'),
+            'created' => session('created'),
+            'retryAfter' => session('retry_after'),
         ]);
-
-        $link = config('app.url') . '/' . $link->code;
-
-        return redirect()->back()
-            ->with('message', sprintf('Link created successfully, your new link is <a target="_blank" href="%s">%s</a>', $link, $link));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Link $link)
+    public function store(StoreLinkRequest $request): RedirectResponse
     {
-        return redirect($link->destination, 301);
+        $link = $this->createWithUniqueCode($request->validated('destination'));
+
+        return redirect()->route('link.create')->with('created', [
+            'url' => route('link.show', $link),
+            'destination' => $link->destination,
+        ]);
+    }
+
+    public function show(Link $link): RedirectResponse
+    {
+        $link->increment('clicks', 1, ['last_clicked_at' => now()]);
+
+        return redirect($link->destination, 302);
+    }
+
+    // The primary key decides: a check-then-insert would race with a parallel request
+    private function createWithUniqueCode(string $destination): Link
+    {
+        for ($attempt = 0; $attempt < self::CODE_ATTEMPTS; $attempt++) {
+            try {
+                return Link::query()->create(['code' => Str::random(8), 'destination' => $destination]);
+            } catch (UniqueConstraintViolationException) {
+                continue;
+            }
+        }
+
+        throw new RuntimeException('Could not find a free link code after '.self::CODE_ATTEMPTS.' attempts');
     }
 }
