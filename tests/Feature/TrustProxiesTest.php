@@ -5,7 +5,7 @@ it('trusts the forwarded scheme from any address', function () {
         'X-Forwarded-Proto' => 'https',
     ]);
 
-    expect(url('/'))->toBe('https://rckklsbr.nl');
+    expect(request()->getSchemeAndHttpHost())->toBe('https://rckklsbr.nl');
 });
 
 it('ignores a forwarded host', function () {
@@ -14,5 +14,5 @@ it('ignores a forwarded host', function () {
         'X-Forwarded-Host' => 'evil.example',
     ]);
 
-    expect(url('/'))->toBe('https://rckklsbr.nl');
+    expect(request()->getSchemeAndHttpHost())->toBe('https://rckklsbr.nl');
 });
