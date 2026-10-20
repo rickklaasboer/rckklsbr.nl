@@ -30,6 +30,8 @@
         <env name="MAIL_MAILER" value="array" force="true"/>
         <env name="TURNSTILE_SITE_KEY" value="test-site-key" force="true"/>
         <env name="TURNSTILE_SECRET_KEY" value="test-secret-key" force="true"/>
+        <server name="TURNSTILE_SITE_KEY" value="test-site-key" force="true"/>
+        <server name="TURNSTILE_SECRET_KEY" value="test-secret-key" force="true"/>
         <env name="QUEUE_CONNECTION" value="sync" force="true"/>
         <env name="SESSION_DRIVER" value="array" force="true"/>
         <server name="SESSION_DRIVER" value="array" force="true"/>
