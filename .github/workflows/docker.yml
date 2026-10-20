@@ -57,6 +57,15 @@ jobs:
       - name: Install JS dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Vitest
+        run: pnpm test
+
+      - name: Check translations
+        run: pnpm i18n:check
+
       - name: Build assets
         run: pnpm build
 

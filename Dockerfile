@@ -5,9 +5,11 @@ WORKDIR /app
 RUN corepack enable
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 RUN corepack install && pnpm install --frozen-lockfile
-COPY vite.config.js ./
+COPY vite.config.ts tsconfig.json ./
 COPY resources/ resources/
 COPY public/ public/
+# i18n.ts imports lang/nl.json
+COPY lang/ lang/
 RUN pnpm build
 
 FROM composer:2.10 AS vendor
