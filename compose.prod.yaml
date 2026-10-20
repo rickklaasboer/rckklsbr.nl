@@ -1,0 +1,45 @@
+services:
+    app:
+        image: ghcr.io/rickklaasboer/rckklsbr.nl:${APP_TAG:-latest}
+        env_file: .env
+        ports:
+            - '${APP_BIND:-127.0.0.1}:${APP_PORT:-8095}:8080'
+        depends_on:
+            mysql:
+                condition: service_healthy
+        restart: unless-stopped
+
+    mysql:
+        image: 'mysql:8.4.11'
+        environment:
+            MYSQL_ROOT_PASSWORD: '${DB_ROOT_PASSWORD}'
+            MYSQL_DATABASE: '${DB_DATABASE}'
+            MYSQL_USER: '${DB_USERNAME}'
+            MYSQL_PASSWORD: '${DB_PASSWORD}'
+        volumes:
+            - 'mysql:/var/lib/mysql'
+        healthcheck:
+            test:
+                - CMD-SHELL
+                - 'mysqladmin ping -uroot -p"$$MYSQL_ROOT_PASSWORD"'
+            interval: 5s
+            timeout: 5s
+            retries: 20
+        restart: unless-stopped
+
+    backup:
+        image: 'mysql:8.4.11'
+        environment:
+            DB_ROOT_PASSWORD: '${DB_ROOT_PASSWORD}'
+            DB_DATABASE: '${DB_DATABASE}'
+        volumes:
+            - './backups:/backups'
+            - './docker/backup.sh:/backup.sh:ro'
+        entrypoint: sh /backup.sh
+        depends_on:
+            mysql:
+                condition: service_healthy
+        restart: unless-stopped
+
+volumes:
+    mysql:

@@ -1,0 +1,3 @@
+CREATE DATABASE IF NOT EXISTS rckklsbr_test;
+GRANT ALL PRIVILEGES ON rckklsbr_test.* TO 'rckklsbr'@'%';
+FLUSH PRIVILEGES;

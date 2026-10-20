@@ -1,0 +1,45 @@
+services:
+  app:
+    build:
+      context: .
+      target: dev
+      args:
+        PUID: ${UID:-1000}
+        PGID: ${GID:-1000}
+    image: rckklsbr-dev
+    volumes:
+      - .:/var/www/html
+    env_file: .env
+    ports:
+      - "8001:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8.4.11
+    environment:
+      MYSQL_DATABASE: rckklsbr
+      MYSQL_USER: rckklsbr
+      MYSQL_PASSWORD: rckklsbr
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  vite:
+    image: node:24-slim
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "5174:5174"
+    command: sh -c "corepack enable && pnpm install && pnpm dev --host 0.0.0.0 --port 5174"
+
+volumes:
+  mysql-data:
