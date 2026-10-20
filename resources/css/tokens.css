@@ -1,0 +1,89 @@
+@theme static {
+  --color-navy: #121316;
+  --color-ink: #3a3c41;
+  --color-muted: #5f636b;
+  --color-sky: #b9d9f0;
+  --color-surface: #f8f9fa;
+  --color-tint: #f3f4f6;
+  --color-hover-tint: #eef3fd;
+  --color-line: #e1e3e7;
+  --color-magenta: #2453d6;
+  --color-purple: #1c3fa8;
+  --color-indigo: #67c3f3;
+  --color-deep-blue: #1d1f24;
+  --color-pink: #8ee3ff;
+  --color-magenta-tint: #e9effc;
+  --color-magenta-ink: #173a99;
+  --color-info: #0b4f99;
+  --color-info-bg: #eef3fd;
+  --color-success: #266a42;
+  --color-success-bg: #e6f4ec;
+  --color-warning: #7a4d00;
+  --color-warning-bg: #fff2d9;
+  --color-error: #a3201c;
+  --color-error-bg: #fdecea;
+  --color-code-comment: #8d95a3;
+  --color-code-command: #ff9a5c;
+  --color-control-border: #c4c8cf;
+  --color-disabled: #8a95a6;
+  --color-skeleton: #e5e7eb;
+  --color-success-border: #9fd3b2;
+  --color-well: #eceef1;
+  --color-ground: #f5f6f8;
+
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, Menlo, monospace;
+
+  /* Artboards inherit line-height 1.6; Tailwind's size utilities would override it */
+  --text-xs--line-height: 1.6;
+  --text-sm--line-height: 1.6;
+  --text-base--line-height: 1.6;
+  --text-lg--line-height: 1.6;
+  --text-xl--line-height: 1.6;
+  --text-2xl--line-height: 1.6;
+
+  --radius-panel: 16px;
+  --radius-well: 8px;
+  --radius-code: 12px;
+  --radius-well-lg: 12px;
+  --radius-card: 10px;
+  --radius-modal: 16px;
+  --radius-button: 10px;
+  --radius-bar: 16px;
+
+  --shadow-row: 0 1px 2px rgb(18 19 22 / 0.05);
+  --shadow-card: 0 2px 8px rgb(18 19 22 / 0.06);
+  --shadow-raised: 0 8px 24px rgb(18 19 22 / 0.1);
+  --shadow-overlay: 0 12px 32px rgb(18 19 22 / 0.16);
+}
+
+:root {
+  /* Motion: all UI animation uses these two durations with ease-out */
+  --duration-base: 200ms;
+  --duration-slow: 300ms;
+
+  --gradient-hero: linear-gradient(90deg, #8ee3ff 0%, #3b82f6 38%, #2453d6 68%, #1d1f24 100%);
+  --gradient-hero-wash: radial-gradient(120% 160% at 100% 100%, rgb(36 83 214 / 0.5) 0%, rgb(28 63 168 / 0.32) 30%, rgb(103 195 243 / 0.22) 55%, rgb(18 19 22 / 0) 80%);
+  --gradient-accent: linear-gradient(#2453d6, #2453d6);
+  --gradient-accent-icon: linear-gradient(#2453d6, #2453d6);
+
+  /* Hero colour fields, variant 0-3 (see lib/cardVariant.ts) */
+  --gradient-card-0: var(--gradient-hero);
+  --gradient-card-1: linear-gradient(225deg, #1d1f24 0%, #67c3f3 30%, #1c3fa8 65%, #2453d6 100%);
+  --gradient-card-2: linear-gradient(150deg, #2453d6 0%, #1c3fa8 35%, #67c3f3 70%, #1d1f24 100%);
+  --gradient-card-3: linear-gradient(20deg, #1d1f24 0%, #67c3f3 25%, #2453d6 60%, #1c3fa8 100%);
+
+  /* Post cards without a cover; colour fields above are for heroes only */
+  --gradient-card-calm: linear-gradient(160deg, #1d1f24 0%, #121316 70%);
+  --gradient-image-shade: linear-gradient(0deg, rgb(18 19 22 / 0.92) 0%, rgb(18 19 22 / 0.76) 52%, rgb(18 19 22 / 0.35) 76%, rgb(18 19 22 / 0) 100%);
+
+  /* Hero fades over the colour field; strong = intro/404/site, soft = page titles */
+  --fade-strong: linear-gradient(180deg, #121316 42%, rgb(18 19 22 / 0.6) 74%, rgb(18 19 22 / 0.1) 100%);
+  --fade-soft: linear-gradient(180deg, #121316 30%, rgb(18 19 22 / 0.55) 62%, rgb(18 19 22 / 0) 100%);
+}
+
+@media (max-width: 767px) {
+  :root {
+    --fade-strong: linear-gradient(180deg, #121316 48%, rgb(18 19 22 / 0.6) 78%, rgb(18 19 22 / 0.15) 100%);
+  }
+}

@@ -1,0 +1,5 @@
+@import 'tailwindcss';
+@import './base.css';
+
+/* Controls inside the dark PageHero toolbar */
+@custom-variant toolbar (&:where([data-hero-toolbar] *));

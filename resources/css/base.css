@@ -1,0 +1,249 @@
+@import '@fontsource/plus-jakarta-sans/400.css';
+@import '@fontsource/plus-jakarta-sans/500.css';
+@import '@fontsource/plus-jakarta-sans/600.css';
+@import '@fontsource/plus-jakarta-sans/700.css';
+@import '@fontsource/plus-jakarta-sans/800.css';
+@import '@fontsource/geist-mono/400.css';
+@import '@fontsource/geist-mono/500.css';
+@import './tokens.css';
+
+@utility meta {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* Lock page scroll behind a modal dialog */
+  html:has(dialog[open]) {
+    overflow: hidden;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-ground);
+    color: var(--color-ink);
+    font: 16px/1.6 var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Safari tints the area under its floating toolbar with body's background; MobileShell paints ground itself */
+  @media (max-width: 767px) {
+    body {
+      background: var(--color-white);
+    }
+  }
+
+  em,
+  i,
+  cite {
+    font-style: normal;
+  }
+
+  a {
+    color: var(--color-navy);
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-color: var(--color-magenta);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+
+  a {
+    transition:
+      color var(--duration-base) ease-out,
+      text-decoration-color var(--duration-base) ease-out,
+      text-decoration-thickness var(--duration-base) ease-out,
+      text-underline-offset var(--duration-base) ease-out;
+  }
+
+  a:hover {
+    color: var(--color-magenta);
+    text-decoration-thickness: 3px;
+    text-underline-offset: 5px;
+  }
+
+  /* One ring for everything: 2px gap in the local surface colour, then 3px navy */
+  :focus-visible {
+    outline: 0;
+    border-radius: 4px;
+    box-shadow:
+      0 0 0 2px var(--focus-gap, #fff),
+      0 0 0 5px var(--focus-ring, var(--color-navy));
+  }
+
+  .on-dark {
+    --focus-gap: var(--color-navy);
+    --focus-ring: var(--color-pink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Micro-interactions. Transforms only inside no-preference; colour fades stay (reduced rule above shortens them) */
+@layer components {
+  .anim-fade,
+  .anim-press,
+  .anim-zoom {
+    transition:
+      color var(--duration-base) ease-out,
+      background-color var(--duration-base) ease-out,
+      border-color var(--duration-base) ease-out,
+      box-shadow var(--duration-base) ease-out,
+      opacity var(--duration-base) ease-out,
+      transform var(--duration-base) ease-out;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .anim-zoom:not(:disabled):hover {
+      transform: scale(1.06);
+    }
+
+    .anim-press:not(:disabled):active,
+    .anim-zoom:not(:disabled):active {
+      transform: scale(0.98);
+    }
+  }
+}
+
+@keyframes ui-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes ui-toast-in {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+}
+
+@keyframes ui-alert-in {
+  from {
+    opacity: 0;
+    translate: 0 -6px;
+  }
+}
+
+@keyframes ui-pop {
+  0% {
+    scale: 0.5;
+  }
+  60% {
+    scale: 1.2;
+  }
+}
+
+.anim-toast {
+  animation: ui-fade-in var(--duration-slow) ease-out;
+}
+
+.anim-alert {
+  animation: ui-fade-in var(--duration-slow) ease-out;
+}
+
+/* Dialogs: discrete display/overlay transitions keep the element rendered while it fades out */
+dialog[data-modal],
+dialog[data-sheet] {
+  transition:
+    opacity var(--duration-base) ease-out,
+    overlay var(--duration-base) allow-discrete,
+    display var(--duration-base) allow-discrete;
+  opacity: 0;
+}
+
+dialog[data-modal][open],
+dialog[data-sheet][open] {
+  opacity: 1;
+}
+
+dialog[data-modal]::backdrop,
+dialog[data-sheet]::backdrop {
+  background-color: rgb(18 19 22 / 0.55);
+  transition:
+    background-color var(--duration-base) ease-out,
+    overlay var(--duration-base) allow-discrete,
+    display var(--duration-base) allow-discrete;
+}
+
+dialog[data-modal]:not([open])::backdrop,
+dialog[data-sheet]:not([open])::backdrop {
+  background-color: transparent;
+}
+
+@starting-style {
+  dialog[data-modal][open],
+  dialog[data-sheet][open] {
+    opacity: 0;
+  }
+
+  dialog[data-modal][open]::backdrop,
+  dialog[data-sheet][open]::backdrop {
+    background-color: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .anim-toast {
+    animation-name: ui-toast-in;
+  }
+
+  .anim-alert {
+    animation-name: ui-alert-in;
+  }
+
+  .anim-pop {
+    animation: ui-pop var(--duration-slow) ease-out;
+  }
+
+  dialog[data-modal] {
+    scale: 0.97;
+    transition:
+      scale var(--duration-base) ease-out,
+      opacity var(--duration-base) ease-out,
+      overlay var(--duration-base) allow-discrete,
+      display var(--duration-base) allow-discrete;
+  }
+
+  /* none, not 1/0: any scale or translate value makes the dialog the containing block of fixed popovers */
+  dialog[data-modal][open] {
+    scale: none;
+  }
+
+  dialog[data-sheet] {
+    translate: 0 100%;
+    transition:
+      translate var(--duration-slow) ease-out,
+      opacity var(--duration-slow) ease-out,
+      overlay var(--duration-slow) allow-discrete,
+      display var(--duration-slow) allow-discrete;
+  }
+
+  dialog[data-sheet][open] {
+    translate: none;
+  }
+
+  @starting-style {
+    dialog[data-modal][open] {
+      scale: 0.97;
+    }
+
+    dialog[data-sheet][open] {
+      translate: 0 100%;
+    }
+  }
+}
