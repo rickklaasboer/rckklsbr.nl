@@ -23,7 +23,7 @@ COPY routes/ routes/
 COPY artisan ./
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
-FROM serversideup/php:8.4-fpm-nginx-alpine-v5.0.1 AS base
+FROM serversideup/php:8.4-fpm-nginx-alpine-v5.0.2 AS base
 
 # Base image already ships pdo_mysql, pcntl, opcache and zip.
 
